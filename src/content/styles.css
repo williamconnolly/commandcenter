@@ -24,3 +24,8 @@ span.mag-icon-wrapper[data-image-view-modal-codename] {
     padding: 20px;
     background: rgba(0, 0, 0, 0.3);
 }
+
+/** reddit */
+body div.side {
+    width: 200px;
+}

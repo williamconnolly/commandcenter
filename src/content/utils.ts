@@ -57,6 +57,10 @@ const PAGE_OFFSET_BUTTON_MAP: { [siteKey: string]: PageSelectors } = {
     'erles': {
         [NEXT_PAGE]: 'a.pop[rel="next"]',
         [PREV_PAGE]: 'a.pop[rel="prev"]'
+    },
+    'nvg': {
+        [NEXT_PAGE]: '.global_pagination :last-child.pagination_jump a',
+        [PREV_PAGE]: '.global_pagination :first-child.pagination_jump a'
     }
 };
 

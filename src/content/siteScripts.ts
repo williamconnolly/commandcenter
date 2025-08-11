@@ -1,4 +1,5 @@
-import { type ContentUrls, queryEachAnchor, retryAction, triggerRedditThumbnailSize, urlIncludes, CSS_VAR_REDDIT_THUMBNAIL } from './utils';
+import { type ContentUrls, queryEachAnchor, retryAction, triggerRedditThumbnailSize, urlIncludes, CSS_VAR_REDDIT_THUMBNAIL, queryEach } from './utils';
+import pre = $effect.pre;
 
 type SiteScript = {
     urls: ContentUrls;
@@ -63,6 +64,28 @@ siteScript('reddit.com', 'Reddit', () => {
         if (a.href.match(/\/r\/[^\/]+$/g)) {
             a.href = a.href + 'top/?sort=top&t=all';
         }
+    });
+    queryEach<HTMLImageElement>('a.thumbnail > img', img => {
+        img.onclick = e => {
+            e.preventDefault();
+            e.stopPropagation();
+            const parentDiv = img.closest<HTMLDivElement>('div.thing');
+            
+            if (parentDiv) {
+                parentDiv.querySelector<HTMLAnchorElement>('a.expando-button')?.click();
+            }
+        };
+    });
+    queryEach<HTMLImageElement>('div.entry', entry => {
+        const title = entry.querySelector<HTMLAnchorElement>('a.title');
+        const expandoButton = entry.querySelector<HTMLAnchorElement>('a.expando-button');
+        if (!title || !expandoButton) {
+            return;
+        }
+        title.onclick = e => {
+            e.preventDefault();
+            expandoButton?.click();
+        };
     });
 
     // todo: import .scss file instead of inline string?
@@ -202,6 +225,38 @@ siteScript('awsapps.com', 'AWS SSO', () => {
                 return false;
             });
             return true;
+        }
+        return false;
+    });
+});
+
+siteScript('erles', 'erles', () => {
+    retryAction(5, 50, () => {
+        const modals = document.querySelectorAll<HTMLDivElement>('.ml-image-modal-data');
+        if (modals.length) {
+            let markedUp = false;
+            modals.forEach((modal, i) => {
+                const previewButton = modal.querySelector<HTMLSpanElement>('span.mag-icon-wrapper[data-image-view-modal-codename]');
+                if (!previewButton) {
+                    return;
+                }
+
+                const clickables = Array.from(modal.querySelectorAll<HTMLImageElement>('a.img-container, a.img-strip-overlay'));
+                if (!clickables) {
+                    return;
+                }
+                clickables.forEach(clickable => {
+                    // add on click listener to img
+                    clickable.onclick = e => {
+                        if (!e.metaKey) {
+                            e.preventDefault();
+                            previewButton.click();
+                        }
+                    };
+                });
+                markedUp = true;
+            });
+            return markedUp;
         }
         return false;
     });
