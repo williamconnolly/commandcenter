@@ -2,6 +2,8 @@
 
 # Editor project files
 .idea/
+.cursor/
+.vscode/
 
 # Dependency directories
 node_modules/

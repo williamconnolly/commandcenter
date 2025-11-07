@@ -235,10 +235,13 @@
         {#each queryCommands as command, index (command.id)}
             <!-- svelte-ignore a11y_mouse_events_have_key_events -->
             <a href={command.url}
-               class="command"
-               class:selected={index === selectedIndex}
-               onmouseenter={() => onCommandHover(index)}
-               onclick={preventDefault((event) => doCommand(index, event.metaKey, event.shiftKey))}
+                class="command"
+                class:selected={index === selectedIndex}
+                onmouseenter={() => onCommandHover(index)}
+                onclick={(event) => {
+                    event.preventDefault();
+                    doCommand(index, event.metaKey, event.shiftKey);
+                }}
             >
             <span class="command-icon">
                 <img src={command.icon} alt={command.title} />
