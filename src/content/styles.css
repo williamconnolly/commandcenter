@@ -4,7 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;
     width: 100vw;
     top: 0;
@@ -28,4 +28,13 @@ span.mag-icon-wrapper[data-image-view-modal-codename] {
 /** reddit */
 body div.side {
     width: 200px;
+}
+
+/** eurv */
+div.page a[href^="attachment"] img {
+    width: 50%;
+}
+
+[id^="post_thanks"] .alt1 {
+    font-size: 5px;
 }
