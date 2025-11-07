@@ -1,7 +1,7 @@
 {
     "name": "commandcenter",
     "description": "Chrome Extension to add vim keybindings and New Tab commands",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "type": "module",
     "repository": {
         "type": "git",
