@@ -42,7 +42,12 @@ jobs:
           cache: 'npm'
 
       - name: Run version update
-        run: npm version ${{ github.event.inputs.updateType || 'patch' }} -m "chore: release v%s"
+        run: |
+          UPDATE_TYPE="${{ github.event.inputs.updateType }}"
+          if [ -z "$UPDATE_TYPE" ]; then
+            UPDATE_TYPE="patch"
+          fi
+          npm version $UPDATE_TYPE -m "chore: release v%s"
 
       - name: Install dependencies
         run: npm ci
