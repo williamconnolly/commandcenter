@@ -1,0 +1,42 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read Node.js version from .nvmrc
+        id: node-version
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.node-version.outputs.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type checking
+        run: npm run check
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check build artifacts
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not created"
+            exit 1
+          fi
+          echo "Build successful - dist directory created"
