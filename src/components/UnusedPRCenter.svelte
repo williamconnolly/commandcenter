@@ -6,6 +6,7 @@
     import type { PR, PRMessageResponse } from '../comms/prs';
     import { offsetSelectedIndex, switchToTab } from './utils';
 
+    type PRWithMatch = PR & { matchIndices?: Set<number> };
 
     type Props = {
         /** Props */
@@ -19,7 +20,7 @@
     /** State */
     let githubUsername = $state('');
     let query = $state('');
-    let tabInputRef: HTMLInputElement = $state();
+    let tabInputRef: HTMLInputElement | undefined = $state();
     let selectedIndex = $state(0);
 
     let prs: PR[] = $state([]);
@@ -30,13 +31,13 @@
 
 
 
-    let queryPRs: PR[] = $derived(searchPRs(prs, query));
+    let queryPRs: PRWithMatch[] = $derived(searchPRs(prs, query));
 
     function searchSelector(pr: PR): string {
         return pr.searchEntry.replaceAll('-', ' ');
     }
 
-    function searchPRs(prs: PR[], search: string): PR[] {
+    function searchPRs(prs: PR[], search: string): PRWithMatch[] {
         const fzf = new Fzf(prs, {
             selector: searchSelector,
             tiebreakers: [dateTieBreaker]
@@ -52,7 +53,7 @@
         return b.item.lastVisitTime - a.item.lastVisitTime;
     }
 
-    function openPR(prId: number) {
+    function openPR(prId: number | null) {
         if (!prId) return;
         // switchToTab(Number(prId));
     }

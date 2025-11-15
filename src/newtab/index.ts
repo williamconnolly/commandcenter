@@ -8,11 +8,8 @@ function render() {
     const target = document.getElementById("app");
 
     if (target) {
-        storage.get().then(({ count }) => {
-            mount(NewTab, {
-                            target,
-                            props: { count },
-                        });
+        mount(NewTab, {
+            target,
         });
     }
 }
