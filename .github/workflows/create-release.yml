@@ -6,6 +6,10 @@ permissions:
   pull-requests: write
 
 on:
+  push:
+    branches:
+      - master
+      - main
   workflow_dispatch:
     inputs:
       updateType:
@@ -20,6 +24,8 @@ jobs:
   Update_version:
     runs-on: ubuntu-latest
     name: Create Release
+    # Skip if this is a version bump commit to prevent infinite loops
+    if: "!startsWith(github.event.head_commit.message, 'chore: release')"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -36,7 +42,7 @@ jobs:
           cache: 'npm'
 
       - name: Run version update
-        run: npm version ${{ github.event.inputs.updateType }}
+        run: npm version ${{ github.event.inputs.updateType || 'patch' }} -m "chore: release v%s"
 
       - name: Install dependencies
         run: npm ci
