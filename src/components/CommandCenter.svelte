@@ -38,7 +38,7 @@
 
     /** State */
     let query = $state('');
-    let commandInputRef: HTMLInputElement = $state();
+    let commandInputRef: HTMLInputElement | undefined = $state();
     let selectedIndex = $state(0);
     let loading = $state(false);
 
@@ -82,7 +82,7 @@
     ];
 
     let allCommands: Command[] = $state([]);
-    let queryCommands: Command[] = $state();
+    let queryCommands: Command[] | undefined = $state();
 
     function searchSelector(command: Command): string {
         const { isSearchUrl, url, title, type } = command;
@@ -129,7 +129,7 @@
     }
 
     function dateTieBreaker(a: FzfResultItem<Command>, b: FzfResultItem<Command>): number {
-        return b.item.sortDate - a.item.sortDate;
+        return (b.item.sortDate ?? 0) - (a.item.sortDate ?? 0);
     }
 
     function onCommandHover(index: number) {
@@ -141,6 +141,7 @@
 
     function doCommand(index: number, metaKey?: boolean, shiftKey?: boolean) {
         loading = true;
+        if (!queryCommands) return;
 
         const command = queryCommands[index];
         if (command.type === CommandType.CURRENT_TAB) {
@@ -188,10 +189,10 @@
             key = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
         }
         if (key === 'ArrowUp') {
-            selectedIndex = offsetSelectedIndex(-1, selectedIndex, queryCommands.length);
+            selectedIndex = offsetSelectedIndex(-1, selectedIndex, queryCommands?.length ?? 0);
         } else if (key === 'ArrowDown') {
-            selectedIndex = offsetSelectedIndex(1, selectedIndex, queryCommands.length);
-        } else if (key === 'Enter' && queryCommands[selectedIndex]) {
+            selectedIndex = offsetSelectedIndex(1, selectedIndex, queryCommands?.length ?? 0);
+        } else if (key === 'Enter' && queryCommands?.[selectedIndex]) {
             doCommand(selectedIndex, event.metaKey, event.shiftKey);
         } else if (key === 'Escape') {
             selectedIndex = 0;

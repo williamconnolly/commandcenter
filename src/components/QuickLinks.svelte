@@ -6,7 +6,7 @@
     import { Msg, sendMessage } from '../comms/messages';
     import type { TabInfo, TabMessageResponse } from '../comms/tabs';
     import { offsetSelectedIndex, switchToTab } from './utils';
-    import type { QuickLinksMessageResponse, QuickLinksTree } from 'src/comms/quickLinks';
+    import type { QuickLinksMessageResponse, QuickLinksTree } from '../comms/quickLinks';
 
 
     type Props = {
@@ -31,10 +31,10 @@
     //
     // let currentTabs: TabInfo[] = $state([]);
     // let closedTabs: TabInfo[] = [];
-    let quickLinks: QuickLinksTree = $state();
+    let quickLinks: QuickLinksTree | undefined = $state();
 
     sendMessage(Msg.loadQuickLinks, (response: QuickLinksMessageResponse) => {
-        quickLinks = response.quickLinks ?? [];
+        quickLinks = response.quickLinks ?? {};
         console.log(response.quickLinks);
     });
 

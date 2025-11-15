@@ -10,6 +10,8 @@ export type TabInfo = {
     index: number;
     windowId: number;
     inCurrentWindow: boolean;
+    sortDate: number;
+    matchIndices?: Set<number>;
 };
 
 export type TabMessageResponse = {
@@ -39,7 +41,8 @@ export function chromeTabToTabInfo(tab: chrome.tabs.Tab, inCurrentWindow: boolea
         pinned: tab.pinned,
         index: tab.index,
         windowId: tab.windowId,
-        inCurrentWindow
+        inCurrentWindow,
+        sortDate: tab.index
     };
 }
 

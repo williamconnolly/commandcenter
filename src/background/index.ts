@@ -94,7 +94,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 index: index,
                 favIconUrl: favIconUrl!,
                 pinned: tab.pinned,
-                closeDate: 0
+                closeDate: 0,
+                windowId: tab.windowId,
+                inCurrentWindow: false,
+                sortDate: index
             };
         }
     }

@@ -25,7 +25,7 @@
 
     /** State */
     let query = $state('');
-    let tabInputRef: HTMLInputElement = $state();
+    let tabInputRef: HTMLInputElement | undefined = $state();
     let selectedIndex = $state(0);
 
     let currentTabs: TabInfo[] = $state([]);
@@ -68,7 +68,7 @@
         return !tab.pinned;
     }
 
-    function removeTab(tabId: string) {
+    function removeTab(tabId: string | null) {
         if (!tabId) return;
         const tabIndex = currentTabs.findIndex(currentTab => currentTab.id === tabId);
         if (tabIndex !== -1) {
@@ -81,7 +81,7 @@
             sendMessage({ removeTabId: Number(tabId) });
             closedTabs.push(closedTab);
         }
-        tabInputRef.focus();
+        tabInputRef?.focus();
     }
 
     function toggleTabPinned(tabId: string) {
@@ -89,9 +89,9 @@
     }
 
     function reopenTab() {
-        const reopenTab: TabInfo = closedTabs.splice(closedTabs.length - 1, 1).at(0);
+        const reopenTab: TabInfo | undefined = closedTabs.splice(closedTabs.length - 1, 1).at(0);
         reopenTab && sendMessage({ reopenTab }, (response: TabMessageResponse) => {
-            currentTabs = response.currentTabs;
+            currentTabs = response.currentTabs ?? [];
         });
     }
 
