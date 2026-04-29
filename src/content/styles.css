@@ -19,6 +19,14 @@
     padding: 0;
 }
 
+/** AWS Secrets Manager */
+[data-test-id="create-secret-wizard"] [class^="awsui_footer_"] {
+    position: absolute;
+    height: 400px;
+    top: 195px;
+    right: 25px;
+}
+
 /** erles */
 span.mag-icon-wrapper[data-image-view-modal-codename] {
     padding: 20px;
@@ -37,4 +45,22 @@ div.page a[href^="attachment"] img {
 
 [id^="post_thanks"] .alt1 {
     font-size: 5px;
+}
+
+#app .flex-column .ConfigArea--wrapper .ConfigOuterWrapper > .flex  {
+    position: fixed;
+    top: 100px;
+    right: 100px;
+    justify-content: end;
+}
+
+[data-cc-frame="iframe"] #app .flex-column .ConfigArea--wrapper .ConfigOuterWrapper > .flex  {
+    position: fixed;
+    top: 35px;
+    right: 175px;
+}
+
+#app .flex-column .ConfigArea--wrapper .btn.primary.blue {
+    font-size: 20px;
+    padding: 20px;
 }

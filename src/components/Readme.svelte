@@ -14,6 +14,7 @@
     let newTabBackgroundColor = $state('#202124');
     let redditThumbnailSizeIncrement = $state(5);
     let currentRedditThumbnailSize = $state(70);
+    let awsProfileNamesCSV = $state('');
     storage.get().then((storage: IStorage) => {
         githubUsername = storage.githubUsername;
         gDoubleTime = storage.gDoubleTime;
@@ -22,6 +23,7 @@
         newTabBackgroundColor = storage.newTabBackgroundColor;
         redditThumbnailSizeIncrement = storage.redditThumbnailSizeIncrement;
         currentRedditThumbnailSize = storage.currentRedditThumbnailSize;
+        awsProfileNamesCSV = storage.awsProfileNamesCSV;
     });
 
     const csvUrlRe = /^[.a-z0-9,_ -]*$/
@@ -34,7 +36,8 @@
             scrollSmooth,
             newTabBackgroundColor,
             redditThumbnailSizeIncrement,
-            currentRedditThumbnailSize
+            currentRedditThumbnailSize,
+            awsProfileNamesCSV
         });
     }
 
@@ -72,6 +75,7 @@
     const ID_NTBC = 'newTabBackgroundColor';
     const ID_RTSI = 'redditThumbnailSizeIncrement';
     const ID_CRTS = 'currentRedditThumbnailSize';
+    const ID_APNCSV = 'awsProfileNamesCSV';
     let vimKeysBlacklistCSVInvalid = $derived(!csvUrlRe.test(vimKeysBlacklistCSV));
     // TODO: Is there a way to just call on scrollSmooth change?
     $effect(() => {
@@ -196,14 +200,25 @@
         >
     </div>
     <div class="setting-input">
+        <label for={ID_APNCSV}>AWS Profile Names:</label>
+        <input id={ID_APNCSV}
+               name={ID_APNCSV}
+               bind:value={awsProfileNamesCSV}
+               onkeydown={handleSettingInputKey}
+               spellcheck="false"
+               autocomplete="off"
+               placeholder="sema4ai-backend-dev, sema4ai-backend-prod"
+        >
+    </div>
+    <div class="setting-input">
         <label for="resetStorage">Reset Storage:</label>
         <button id="resetStorage" onclick={() => resetStorage().then(window.close)}>Reset Storage</button>
     </div>
 </div>
 
 <style lang="scss">
-    @import '../assets/colors';
-    @import '../assets/mixins';
+    @use '../assets/colors' as *;
+    @use '../assets/mixins' as *;
 
     .readme-container {
         @include system-font;

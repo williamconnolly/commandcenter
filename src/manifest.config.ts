@@ -22,6 +22,16 @@ export default defineManifest(async (env) => ({
             matches: ["https://*/*"],
             js: ["src/content/index.ts", "src/content/commandcenter.ts"],
         },
+        {
+            matches: ["https://*/*"],
+            js: ["src/content/styles-only.ts"],
+            all_frames: true,
+        },
+        {
+            matches: ["https://*.app.sema4ai.dev/*", "https://*.zoom.us/*"],
+            js: ["src/content/darkreader.ts"],
+            run_at: "document_start",
+        },
     ],
     background: {
         service_worker: "src/background/index.ts",
@@ -38,6 +48,20 @@ export default defineManifest(async (env) => ({
         "bookmarks",
         "history",
         "storage",
-        "tabs"
+        "tabs",
+        "declarativeNetRequest"
     ] as chrome.runtime.ManifestPermissions[],
+    host_permissions: [
+        "https://*.app.sema4ai.dev/*",
+        "https://*.zoom.us/*"
+    ],
+    declarative_net_request: {
+        rule_resources: [
+            {
+                id: "darkreader_csp",
+                enabled: true,
+                path: "src/rules/darkreader_csp.json"
+            }
+        ]
+    },
 }));

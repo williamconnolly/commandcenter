@@ -16,7 +16,7 @@
 </div>
 
 <style lang="scss">
-    @import '../assets/mixins';
+    @use '../assets/mixins' as *;
 
     .key-function-info {
         display: flex;

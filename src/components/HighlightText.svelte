@@ -15,8 +15,8 @@
 </div>
 
 <style lang="scss">
-    @import '../assets/colors';
-    @import '../assets/mixins';
+    @use '../assets/colors' as *;
+    @use '../assets/mixins' as *;
 
     .highlight-text {
         @include normalize;

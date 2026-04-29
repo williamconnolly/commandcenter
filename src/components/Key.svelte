@@ -15,7 +15,7 @@
 </code>
 
 <style lang="scss">
-    @import '../assets/colors';
+    @use '../assets/colors' as *;
 
     code {
         display: inline-block;

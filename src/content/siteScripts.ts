@@ -1,4 +1,5 @@
-import { type ContentUrls, queryEachAnchor, retryAction, triggerRedditThumbnailSize, urlIncludes, CSS_VAR_REDDIT_THUMBNAIL, queryEach } from './utils';
+import { storage } from '../storage';
+import { type ContentUrls, CSS_VAR_REDDIT_THUMBNAIL, queryEach, queryEachAnchor, retryAction, triggerRedditThumbnailSize, urlIncludes } from './utils';
 import pre = $effect.pre;
 
 type SiteScript = {
@@ -211,18 +212,74 @@ siteScript('meet.google.com', 'Google Meet', () => {
 });
 
 siteScript('awsapps.com', 'AWS SSO', () => {
-    retryAction(5, 100, () => {
-        const portalApplication = document.querySelector<HTMLDivElement>('portal-application');
-        if (portalApplication) {
-            portalApplication.click();
+    insertStyle('commandcenter-aws-sso', `
+        [data-testid="account-list"] {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        [data-testid="account-list"] > div.commandcenter-favorite-profile {
+            order: -1 !important;
+        }
+    `);
 
-            retryAction(3, 20, () => {
-                const expandIcons = document.querySelectorAll<HTMLImageElement>('.expandIcon');
-                if (expandIcons?.length) {
-                    expandIcons.forEach(ei => ei.click());
-                    return true;
+    retryAction(5, 100, () => {
+        const accountList = document.querySelector('[data-testid="account-list"]');
+        if (accountList) {
+            storage.get().then(({ awsProfileNamesCSV }) => {
+                const profileNames = awsProfileNamesCSV
+                    .split(',')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+                
+                function markFavorites() {
+                    const allButtons = document.querySelectorAll<HTMLButtonElement>(
+                        'button[data-testid="account-list-cell"]'
+                    );
+                    allButtons.forEach(button => {
+                        const accountNameSpan = button.querySelector<HTMLSpanElement>('strong span');
+                        if (accountNameSpan) {
+                            const accountName = accountNameSpan.textContent?.trim() || '';
+                            let accountContainer = button.parentElement;
+                            while (accountContainer && accountContainer.parentElement !== accountList) {
+                                accountContainer = accountContainer.parentElement;
+                            }
+                            if (accountContainer && accountContainer.parentElement === accountList) {
+                                if (profileNames.includes(accountName)) {
+                                    accountContainer.classList.add('commandcenter-favorite-profile');
+                                } else {
+                                    accountContainer.classList.remove('commandcenter-favorite-profile');
+                                }
+                            }
+                        }
+                    });
                 }
-                return false;
+
+                markFavorites();
+                
+                const observer = new MutationObserver(() => {
+                    markFavorites();
+                });
+                observer.observe(accountList, { childList: true, subtree: true });
+                
+                retryAction(3, 20, () => {
+                    const collapsedButtons = document.querySelectorAll<HTMLButtonElement>(
+                        'button[data-testid="account-list-cell"][aria-expanded="false"]'
+                    );
+                    if (collapsedButtons?.length) {
+                        collapsedButtons.forEach(button => {
+                            const accountNameSpan = button.querySelector<HTMLSpanElement>('strong span');
+                            if (accountNameSpan) {
+                                const accountName = accountNameSpan.textContent?.trim() || '';
+                                if (profileNames.includes(accountName)) {
+                                    button.click();
+                                }
+                            }
+                        });
+                        markFavorites();
+                        return true;
+                    }
+                    return false;
+                });
             });
             return true;
         }

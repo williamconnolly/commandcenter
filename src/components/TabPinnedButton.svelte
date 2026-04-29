@@ -13,7 +13,7 @@
 </span>
 
 <style lang="scss">
-    @import '../assets/colors';
+    @use '../assets/colors' as *;
 
     $size: 24px;
 

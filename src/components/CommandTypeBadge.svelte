@@ -13,7 +13,7 @@
 </span>
 
 <style lang="scss">
-    @import '../assets/colors';
+    @use '../assets/colors' as *;
 
     .command-type-badge {
         font-size: 12px;

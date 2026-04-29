@@ -6,6 +6,7 @@ export type IStorage = {
     newTabBackgroundColor: string;
     redditThumbnailSizeIncrement: number;
     currentRedditThumbnailSize: number;
+    awsProfileNamesCSV: string;
 };
 
 const defaultStorage: IStorage = {
@@ -16,6 +17,7 @@ const defaultStorage: IStorage = {
     newTabBackgroundColor: '#202124', // $kh-black value
     redditThumbnailSizeIncrement: 5,
     currentRedditThumbnailSize: 100,
+    awsProfileNamesCSV: 'sema4ai-backend-dev, sema4ai-backend-prod',
 };
 
 export async function resetStorage() {

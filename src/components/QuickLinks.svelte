@@ -153,8 +153,8 @@
 </div>
 
 <style lang="scss">
-    @import '../assets/colors';
-    @import '../assets/mixins';
+    @use '../assets/colors' as *;
+    @use '../assets/mixins' as *;
 
     @mixin list-border {
         border: 1px solid $kh-gray;

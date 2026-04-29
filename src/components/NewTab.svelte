@@ -51,7 +51,7 @@
 </div>
 
 <style lang="scss">
-    @import '../assets/colors';
+    @use '../assets/colors' as *;
 
     .container {
         display: flex;
