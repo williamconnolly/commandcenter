@@ -64,3 +64,36 @@ div.page a[href^="attachment"] img {
     font-size: 20px;
     padding: 20px;
 }
+
+.pagination_link a[rel=next],
+.pagination_link a[rel=prev] {
+    height: 100px !important;
+    width: 100px !important;
+    font-size: 48px !important;
+    line-height: 100px !important;
+}
+
+.postdetails .userinfo {
+    display: none !important;
+}
+
+.postdetails .postbody {
+    margin-left: 5px !important;
+
+}
+
+body:has(#app .navbar) {
+    padding-top: 0 !important;
+}
+
+#app nav.navbar.navbar-expand-md {
+    display: none !important;
+}
+
+#app main.py-5 {
+    padding-top: 0 !important;
+}
+
+#app .header-top.pb-3.mb-3 {
+    max-height: 20px !important;
+}

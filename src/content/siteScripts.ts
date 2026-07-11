@@ -319,6 +319,28 @@ siteScript('erles', 'erles', () => {
     });
 });
 
+siteScript('imagebam', 'ImageBam', () => {
+    retryAction(5, 50, () => {
+        const continueLink = document.querySelector<HTMLAnchorElement>('#continue a[href]');
+        if (continueLink) {
+            continueLink.click();
+            return true;
+        }
+        return false;
+    });
+});
+
+siteScript('tineye', 'Tineye', () => {
+    retryAction(5, 50, () => {
+        const anchors = document.querySelectorAll<HTMLAnchorElement>('a[href][title]');
+        if (anchors.length) {
+            anchors.forEach(a => a.target = '_blank');
+            return true;
+        }
+        return false;
+    });
+});
+
 siteScript(['sdxdemo.com', 'response.lithium.com', 'app.khoros.com'], 'Care', () => {
     if (urlIncludes('/account/login') && !urlIncludes('manual-c01')) {
         window.location.href = window.location.href.replace('/account/login', '/khoros/login');
@@ -341,6 +363,37 @@ siteScript(['sdxdemo.com', 'response.lithium.com', 'app.khoros.com'], 'Care', ()
         }
     }, 2000)
 });
+
+// siteScript(['eurf', 'viper'], 'Eurf/Ergi thumbnail click', () => {
+//     function setupThumbnailClicks() {
+//         let foundOne = false;
+//         queryEach<HTMLAnchorElement>('a[id^="attachment"][target="_blank"]', anchor => {
+//             const thumbnail = anchor.querySelector<HTMLImageElement>('img.thumbnail[alt]');
+//             if (thumbnail && thumbnail.alt) {
+//                 thumbnail.onclick = e => {
+//                     e.preventDefault();
+//                     e.stopPropagation();
+//                     // Open in new tab without focusing (like cmd-shift-click)
+//                     window.open(anchor.href, '_blank');
+//                 };
+//                 foundOne = true;
+//             }
+//         });
+//         return foundOne;
+//     }
+
+//     retryAction(5, 100, setupThumbnailClicks);
+    
+//     // Also set up a MutationObserver to handle dynamically added elements
+//     const observer = new MutationObserver(() => {
+//         setupThumbnailClicks();
+//     });
+    
+//     observer.observe(document.body, {
+//         childList: true,
+//         subtree: true
+//     });
+// });
 
 export function setupSiteScripts() {
     SITE_SCRIPTS.forEach(script => {
