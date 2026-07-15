@@ -247,6 +247,10 @@ siteScript('meet.google.com', 'Google Meet', () => {
 });
 
 siteScript('awsapps.com', 'AWS SSO', () => {
+    setTimeout(() => {
+        document.querySelector<HTMLButtonElement>('button[data-testid="allow-access-button"]')?.click();
+    }, 3000);
+
     insertStyle('commandcenter-aws-sso', `
         [data-testid="account-list"] {
             display: flex !important;
