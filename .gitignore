@@ -32,3 +32,5 @@ build/
 .env.local
 
 .claude/
+.agents/
+.codex/

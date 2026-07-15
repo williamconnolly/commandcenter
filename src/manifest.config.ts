@@ -32,6 +32,11 @@ export default defineManifest(async (env) => ({
             js: ["src/content/darkreader.ts"],
             run_at: "document_start",
         },
+        {
+            matches: ["https://*.app.sema4ai.dev/*"],
+            js: ["src/content/replicated-admin.ts"],
+            all_frames: true,
+        },
     ],
     background: {
         service_worker: "src/background/index.ts",

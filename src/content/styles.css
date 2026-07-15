@@ -60,7 +60,7 @@ div.page a[href^="attachment"] img {
     right: 175px;
 }
 
-#app .flex-column .ConfigArea--wrapper .btn.primary.blue {
+#app .flex-column .ConfigArea--wrapper .btn.primary.blue, [data-testid="deploy-and-confirm-area"] .btn.primary {
     font-size: 20px;
     padding: 20px;
 }

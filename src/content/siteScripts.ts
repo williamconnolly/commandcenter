@@ -148,6 +148,41 @@ siteScript('github.com', 'GitHub', () => {
         return foundOne;
     });
     retryStatusActions();
+
+    // make the PR header's copy button copy a markdown link to the PR instead of the branch name
+    document.addEventListener('click', e => {
+        const prPath = window.location.pathname.match(/^\/[^/]+\/[^/]+\/pull\/\d+/);
+        if (!prPath) {
+            return;
+        }
+        const button = (e.target as Element).closest<HTMLButtonElement>('button[data-component="IconButton"]');
+        if (!button || !button.querySelector('svg.octicon-copy')) {
+            return;
+        }
+        const labelId = button.getAttribute('aria-labelledby');
+        const label = (labelId ? document.getElementById(labelId)?.textContent : button.getAttribute('aria-label')) || '';
+        if (!/copy head branch/i.test(label)) {
+            return;
+        }
+        const title = document.title.replace(/^\(\d+\)\s*/, '').match(/^(.*) by [^·]+ · Pull Request #\d+/)?.[1];
+        if (!title) {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        navigator.clipboard.writeText(`[${title}](${window.location.origin}${prPath[0]})`);
+    }, true);
+
+    // open notification links in a new tab, keeping the notifications list open
+    document.addEventListener('click', e => {
+        if (!window.location.pathname.startsWith('/notifications')) {
+            return;
+        }
+        const anchor = (e.target as Element).closest<HTMLAnchorElement>('a.notification-list-item-link');
+        if (anchor) {
+            anchor.target = '_blank';
+        }
+    }, true);
 });
 
 siteScript('meet.google.com', 'Google Meet', () => {
@@ -394,6 +429,41 @@ siteScript(['sdxdemo.com', 'response.lithium.com', 'app.khoros.com'], 'Care', ()
 //         subtree: true
 //     });
 // });
+
+siteScript('app.graphite.com', 'Graphite', () => {
+    // send PR links to github instead of graphite's own PR page
+    const GITHUB_PR_PATH = /^\/github\/pr\/([^/]+)\/([^/]+)\/(\d+)/;
+    const toGithub = (e: Event) => {
+        const anchor = (e.target as Element).closest<HTMLAnchorElement>('a[href*="/github/pr/"]');
+        if (!anchor) {
+            return;
+        }
+        const match = new URL(anchor.href).pathname.match(GITHUB_PR_PATH);
+        if (match) {
+            anchor.href = `https://github.com/${match[1]}/${match[2]}/pull/${match[3]}`;
+            e.stopPropagation();
+        }
+    };
+    document.addEventListener('click', toGithub, true);
+    document.addEventListener('auxclick', toGithub, true);
+});
+
+siteScript('amazon.com', 'Amazon', () => {
+    window.addEventListener('commandcenter:focusSearch', () => {
+        document.querySelector<HTMLInputElement>('input[role="searchbox"]')?.focus();
+    });
+});
+
+siteScript(['sema4ai-internal-prod.us.auth0.com/u/consent', 'sema4ai-dev.us.auth0.com/u/consent'], 'Auth0 Consent', () => {
+    retryAction(10, 200, () => {
+        const button = document.querySelector<HTMLButtonElement>('button[name="action"][value="accept"]');
+        if (button) {
+            button.click();
+            return true;
+        }
+        return false;
+    });
+});
 
 export function setupSiteScripts() {
     SITE_SCRIPTS.forEach(script => {

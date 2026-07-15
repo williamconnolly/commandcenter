@@ -8,7 +8,8 @@
         "url": "https://github.com/williamconnolly/commandcenter.git"
     },
     "scripts": {
-        "build": "vite build && open -a \"Brave Browser\" 'brave://extensions/'",
+        "build": "vite build",
+        "build:reload": "vite build && npm run reload",
         "start": "vite build --watch",
         "check": "svelte-check --tsconfig ./tsconfig.json",
         "reload": "open -a \"Brave Browser\" 'brave://extensions/'"
