@@ -34,3 +34,4 @@ build/
 .claude/
 .agents/
 .codex/
+test-results/
