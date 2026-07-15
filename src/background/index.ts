@@ -11,6 +11,25 @@ import { getPRs } from '../comms/prs';
 import { storage } from '../storage';
 import { loadQuickLinks } from '../comms/quickLinks';
 
+const KVM_ORIGINS = new Set([
+    'https://will-kvm.tailb1072f.ts.net',
+    'https://192.168.68.67',
+    'http://192.168.68.67',
+]);
+
+void chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+
+function isKvmPage(url: string | undefined): boolean {
+    if (!url) {
+        return false;
+    }
+    try {
+        return KVM_ORIGINS.has(new URL(url).origin);
+    } catch {
+        return false;
+    }
+}
+
 chrome.runtime.onMessage.addListener(
     (message: Message, sender, sendResponse) => {
         if (!sender.tab) {
@@ -19,7 +38,13 @@ chrome.runtime.onMessage.addListener(
         }
         const senderTab = makeSenderTab(sender);
         if (message.directive) {
-            if (message.directive === Msg.openExtensions) {
+            if (message.directive === Msg.getKvmPassword) {
+                if (!isKvmPage(sender.url)) {
+                    sendResponse({ password: '' });
+                } else {
+                    storage.getKvmPassword().then(password => sendResponse({ password }));
+                }
+            } else if (message.directive === Msg.openExtensions) {
                 chrome.tabs.create({ url: 'chrome://extensions' });
             } else if (message.directive === Msg.closeCurrentTab) {
                 chrome.tabs.remove(senderTab.id, () => {

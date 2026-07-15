@@ -37,10 +37,43 @@ test('loads the built Manifest V3 extension and renders its popup', async ({ con
     const manifest = JSON.parse(await readFile(path.join(extensionPath, 'manifest.json'), 'utf8'));
     expect(manifest.manifest_version).toBe(3);
     expect(manifest.background.service_worker).toBeTruthy();
+    const contentScriptMatches = manifest.content_scripts.flatMap((script: { matches: string[] }) => script.matches);
+    expect(contentScriptMatches).toContain('https://will-kvm.tailb1072f.ts.net/*');
+    expect(contentScriptMatches).toContain('https://192.168.68.67/*');
+    expect(contentScriptMatches).toContain('http://192.168.68.67/*');
 
     const popup = await context.newPage();
     await popup.goto(`chrome-extension://${extensionId}/src/popup/popup.html`);
 
     await expect(popup.getByRole('heading', { name: 'CommandCenter' })).toBeVisible();
     await expect(popup.getByLabel('GitHub Username:')).toBeVisible();
+    const kvmPassword = popup.getByLabel('KVM Password:');
+    await kvmPassword.fill('test-only-kvm-password');
+    await kvmPassword.blur();
+    await expect.poll(() => popup.evaluate(() => chrome.storage.local.get('kvmPassword').then(({ kvmPassword }) => kvmPassword))).toBe('test-only-kvm-password');
+
+    await context.route('https://will-kvm.tailb1072f.ts.net/**', async route => {
+        const hasExistingPassword = new URL(route.request().url()).searchParams.get('state') === 'existing';
+        await route.fulfill({
+            contentType: 'text/html',
+            body: `
+                <input id="form_item_passwd" type="password" value="${hasExistingPassword ? 'already-entered' : ''}">
+                <script>
+                    window.passwordEvents = 0;
+                    document.addEventListener('input', () => window.passwordEvents++);
+                    document.addEventListener('change', () => window.passwordEvents++);
+                </script>
+            `,
+        });
+    });
+
+    const kvmLogin = await context.newPage();
+    await kvmLogin.goto('https://will-kvm.tailb1072f.ts.net/#/');
+    await expect(kvmLogin.locator('#form_item_passwd')).toHaveValue('test-only-kvm-password');
+    await expect.poll(() => kvmLogin.evaluate(() => window.passwordEvents)).toBeGreaterThan(0);
+
+    const existingPasswordLogin = await context.newPage();
+    await existingPasswordLogin.goto('https://will-kvm.tailb1072f.ts.net/?state=existing#/');
+    await expect(existingPasswordLogin.locator('#form_item_passwd')).toHaveValue('already-entered');
+    await expect.poll(() => existingPasswordLogin.evaluate(() => window.passwordEvents)).toBe(0);
 });
