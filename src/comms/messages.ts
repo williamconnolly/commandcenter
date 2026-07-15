@@ -10,6 +10,7 @@ export const Msg = {
     loadClosedTabCommands: 'loadClosedTabCommands',
     loadCurrentTabs: 'loadCurrentTabs',
     loadQuickLinks: 'loadQuickLinks',
+    getKvmPassword: 'getKvmPassword',
 };
 
 export type Message = {

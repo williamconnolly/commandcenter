@@ -15,6 +15,7 @@
     let redditThumbnailSizeIncrement = $state(5);
     let currentRedditThumbnailSize = $state(70);
     let awsProfileNamesCSV = $state('');
+    let kvmPassword = $state('');
     storage.get().then((storage: IStorage) => {
         githubUsername = storage.githubUsername;
         gDoubleTime = storage.gDoubleTime;
@@ -25,6 +26,7 @@
         currentRedditThumbnailSize = storage.currentRedditThumbnailSize;
         awsProfileNamesCSV = storage.awsProfileNamesCSV;
     });
+    storage.getKvmPassword().then(password => kvmPassword = password);
 
     const csvUrlRe = /^[.a-z0-9,_ -]*$/
 
@@ -76,7 +78,21 @@
     const ID_RTSI = 'redditThumbnailSizeIncrement';
     const ID_CRTS = 'currentRedditThumbnailSize';
     const ID_APNCSV = 'awsProfileNamesCSV';
+    const ID_KVM_PASSWORD = 'kvmPassword';
     let vimKeysBlacklistCSVInvalid = $derived(!csvUrlRe.test(vimKeysBlacklistCSV));
+    let kvmPasswordTimer: number;
+    function saveKvmPassword() {
+        clearTimeout(kvmPasswordTimer);
+        void storage.setKvmPassword(kvmPassword);
+    }
+    function handleKvmPasswordInputKey(event: KeyboardEvent) {
+        clearTimeout(kvmPasswordTimer);
+        if (event.key === 'Enter') {
+            saveKvmPassword();
+            return;
+        }
+        kvmPasswordTimer = window.setTimeout(saveKvmPassword, 300);
+    }
     // TODO: Is there a way to just call on scrollSmooth change?
     $effect(() => {
         if (scrollSmooth || !scrollSmooth) {
@@ -208,6 +224,17 @@
                spellcheck="false"
                autocomplete="off"
                placeholder="sema4ai-backend-dev, sema4ai-backend-prod"
+        >
+    </div>
+    <div class="setting-input">
+        <label for={ID_KVM_PASSWORD}>KVM Password:</label>
+        <input id={ID_KVM_PASSWORD}
+               name={ID_KVM_PASSWORD}
+               type="password"
+               bind:value={kvmPassword}
+               onkeydown={handleKvmPasswordInputKey}
+               onblur={saveKvmPassword}
+               autocomplete="off"
         >
     </div>
     <div class="setting-input">

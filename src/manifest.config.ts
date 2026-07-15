@@ -37,6 +37,14 @@ export default defineManifest(async (env) => ({
             js: ["src/content/replicated-admin.ts"],
             all_frames: true,
         },
+        {
+            matches: [
+                "https://will-kvm.tailb1072f.ts.net/*",
+                "https://192.168.68.67/*",
+                "http://192.168.68.67/*",
+            ],
+            js: ["src/content/kvm.ts"],
+        },
     ],
     background: {
         service_worker: "src/background/index.ts",
