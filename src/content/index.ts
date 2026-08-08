@@ -5,6 +5,33 @@ import { setupVimKeys } from './vimKeys';
 
 setupSiteScripts();
 
+document.addEventListener('click', event => {
+    if (
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.shiftKey ||
+        !(event.target instanceof Element)
+    ) {
+        return;
+    }
+
+    const anchor = event.target.closest<HTMLAnchorElement>('a[href]');
+    if (!anchor) {
+        return;
+    }
+
+    const url = new URL(anchor.href);
+    if (url.protocol !== 'https:' || url.hostname !== 'linear.app') {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.location.assign(`linear://${url.pathname.slice(1)}${url.search}${url.hash}`);
+}, true);
+
 // Expose page offset functionality to external scripts via custom events
 window.addEventListener('commandcenter:triggerPageOffset:next', () => {
     triggerPageOffset(NEXT_PAGE);
