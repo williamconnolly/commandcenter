@@ -34,6 +34,12 @@ export default defineManifest(async (env) => ({
         },
         {
             matches: ["https://*.app.sema4ai.dev/*"],
+            js: ["src/content/sema4ai-tour.ts"],
+            run_at: "document_start",
+            world: "MAIN",
+        },
+        {
+            matches: ["https://*.app.sema4ai.dev/*"],
             js: ["src/content/replicated-admin.ts"],
             all_frames: true,
         },

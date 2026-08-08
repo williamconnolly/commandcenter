@@ -27,7 +27,7 @@
     text-align: left;
     -webkit-font-smoothing: initial;
 
-    *, div, input, span {
+    * {
         @include normalize;
     }
 }

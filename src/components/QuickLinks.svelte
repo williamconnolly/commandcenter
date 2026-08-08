@@ -156,12 +156,6 @@
     @use '../assets/colors' as *;
     @use '../assets/mixins' as *;
 
-    @mixin list-border {
-        border: 1px solid $kh-gray;
-        border-left: none;
-        border-right: none;
-    }
-
     .tabs-container {
         @include container-base;
         margin: 0;
@@ -172,90 +166,6 @@
             min-width: 1000px;
             width: 1000px;
             max-width: 1000px;
-        }
-
-        .input-container {
-            width: 100%;
-            border-bottom: 3px solid $kh-silver;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-
-            .tab-input {
-                padding: 15px 20px;
-                font-size: 24px;
-                color: $kh-white;
-                background-color: black;
-                width: 100%;
-                border: none;
-
-                &:focus {
-                    outline: none;
-                }
-
-                &:focus-visible {
-                    box-shadow: none;
-                    outline: none !important;
-                }
-            }
-        }
-
-        .tabs-list {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            width: 100%;
-
-            .tab {
-                @include list-border;
-                position: relative;
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                padding: 5px 0;
-                text-decoration: none;
-                width: 100%;
-
-                &.is-other-window {
-                    background-color: $kh-darkgray;
-                    border-color: $kh-black;
-                }
-
-                &:first-child {
-                    border-top: none;
-                }
-
-                &.selected {
-                    background-color: $kh-blue;
-                }
-
-                .tab-icon {
-                    margin-left: 10px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    img {
-                        width: 20px;
-                        height: 20px;
-                    }
-                }
-
-                .tab-highlight-texts {
-                    margin-left: 10px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-evenly;
-                    width: calc(100% - 100px);
-                }
-
-                .tab-buttons {
-                    margin-right: 10px;
-                    display: flex;
-                }
-            }
         }
     }
 </style>

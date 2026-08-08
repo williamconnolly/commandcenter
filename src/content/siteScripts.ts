@@ -150,7 +150,11 @@ siteScript('github.com', 'GitHub', () => {
     retryStatusActions();
 
     // make the PR header's copy button copy a markdown link to the PR instead of the branch name
+    // (hold a modifier key to keep GitHub's native copy-branch-name behavior)
     document.addEventListener('click', e => {
+        if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
+            return;
+        }
         const prPath = window.location.pathname.match(/^\/[^/]+\/[^/]+\/pull\/\d+/);
         if (!prPath) {
             return;
@@ -247,9 +251,14 @@ siteScript('meet.google.com', 'Google Meet', () => {
 });
 
 siteScript('awsapps.com', 'AWS SSO', () => {
-    setTimeout(() => {
-        document.querySelector<HTMLButtonElement>('button[data-testid="allow-access-button"]')?.click();
-    }, 3000);
+    retryAction(3, 50, () => {
+        const allowButton = document.querySelector<HTMLButtonElement>('button[data-testid="allow-access-button"]');
+        if (allowButton) {
+            allowButton.click();
+            return true;
+        }
+        return false;
+    });
 
     insertStyle('commandcenter-aws-sso', `
         [data-testid="account-list"] {
