@@ -1,7 +1,7 @@
 <script lang="ts">
     import KeyFunctionDescription from './KeyFunctionDescription.svelte';
     import K from './Key.svelte';
-    import { type IStorage, resetStorage, storage } from '../storage';
+    import { type IStorage, type VideoSeekRule, resetStorage, storage } from '../storage';
     import { G_KEY_MAP, KEY_MAP, type KeyMap } from '../content/vimKeys';
     import Switch from './Switch.svelte';
 
@@ -15,6 +15,7 @@
     let redditThumbnailSizeIncrement = $state(5);
     let currentRedditThumbnailSize = $state(70);
     let awsProfileNamesCSV = $state('');
+    let videoSeekRules = $state<VideoSeekRule[]>([]);
     storage.get().then((storage: IStorage) => {
         githubUsername = storage.githubUsername;
         gDoubleTime = storage.gDoubleTime;
@@ -24,6 +25,7 @@
         redditThumbnailSizeIncrement = storage.redditThumbnailSizeIncrement;
         currentRedditThumbnailSize = storage.currentRedditThumbnailSize;
         awsProfileNamesCSV = storage.awsProfileNamesCSV;
+        videoSeekRules = storage.videoSeekRules;
     });
 
     const csvUrlRe = /^[.a-z0-9,_ -]*$/
@@ -37,20 +39,33 @@
             newTabBackgroundColor,
             redditThumbnailSizeIncrement,
             currentRedditThumbnailSize,
-            awsProfileNamesCSV
+            awsProfileNamesCSV,
+            videoSeekRules
         });
     }
 
+    function addVideoSeekRule() {
+        videoSeekRules = [...videoSeekRules, { urlPattern: '', videoSelector: '' }];
+        saveSettings();
+    }
+
+    function removeVideoSeekRule(index: number) {
+        videoSeekRules = videoSeekRules.filter((_, ruleIndex) => ruleIndex !== index);
+        saveSettings();
+    }
+
     let debounceTimer: number;
-    const handleSettingInputKey = (event: KeyboardEvent) => {
+    function scheduleSaveSettings() {
         clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(saveSettings, 300);
+    }
+
+    const handleSettingInputKey = (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
             saveSettings();
             return;
         }
-        debounceTimer = setTimeout(() => {
-            saveSettings();
-        }, 300)
+        scheduleSaveSettings();
     }
 
     type KeyFunctionInfo = {
@@ -76,6 +91,7 @@
     const ID_RTSI = 'redditThumbnailSizeIncrement';
     const ID_CRTS = 'currentRedditThumbnailSize';
     const ID_APNCSV = 'awsProfileNamesCSV';
+    const ID_VSR = 'videoSeekRules';
     let vimKeysBlacklistCSVInvalid = $derived(!csvUrlRe.test(vimKeysBlacklistCSV));
     // TODO: Is there a way to just call on scrollSmooth change?
     $effect(() => {
@@ -210,6 +226,32 @@
                placeholder="sema4ai-backend-dev, sema4ai-backend-prod"
         >
     </div>
+    <div class="setting-input video-seek-settings">
+        <label for={ID_VSR}>Video Seek Controls:</label>
+        <div class="video-seek-rules" id={ID_VSR}>
+            {#each videoSeekRules as rule, index}
+                <div class="video-seek-rule">
+                    <input aria-label="Video seek URL pattern"
+                           bind:value={rule.urlPattern}
+                           oninput={scheduleSaveSettings}
+                           spellcheck="false"
+                           autocomplete="off"
+                           placeholder="URL pattern, e.g. example.com"
+                    >
+                    <input aria-label="Video selector"
+                           bind:value={rule.videoSelector}
+                           oninput={scheduleSaveSettings}
+                           spellcheck="false"
+                           autocomplete="off"
+                           placeholder="Video selector, optional"
+                    >
+                    <button type="button" onclick={() => removeVideoSeekRule(index)}>Remove</button>
+                </div>
+            {/each}
+            <p>Leave the selector blank to target the first <code>video</code> element.</p>
+            <button type="button" onclick={addVideoSeekRule}>Add video site</button>
+        </div>
+    </div>
     <div class="setting-input">
         <label for="resetStorage">Reset Storage:</label>
         <button id="resetStorage" onclick={() => resetStorage().then(window.close)}>Reset Storage</button>
@@ -247,6 +289,12 @@
             align-items: center;
         }
 
+        &.video-seek-settings {
+            height: auto;
+            align-items: flex-start;
+            margin: 10px 0;
+        }
+
         label {
             margin-right: 10px;
             width: 35%;
@@ -279,6 +327,25 @@
 
         input[type="color"] {
             padding: 0;
+        }
+    }
+
+    .video-seek-rules {
+        flex: 1;
+
+        p {
+            margin: 5px 0;
+            padding: 0;
+        }
+    }
+
+    .video-seek-rule {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 5px;
+
+        input {
+            min-width: 0;
         }
     }
 

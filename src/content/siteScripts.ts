@@ -1,4 +1,5 @@
-import { storage } from '../storage';
+import { storage, type VideoSeekRule } from '../storage';
+import { Msg, sendMessage } from '../comms/messages';
 import { type ContentUrls, CSS_VAR_REDDIT_THUMBNAIL, queryEach, queryEachAnchor, retryAction, triggerRedditThumbnailSize, urlIncludes } from './utils';
 import pre = $effect.pre;
 
@@ -340,6 +341,112 @@ siteScript('tineye', 'Tineye', () => {
         return false;
     });
 });
+
+siteScript('s.cc', 's.cc theatre mode', () => {
+    const startedAt = Date.now();
+    const interval = setInterval(() => {
+        if (Date.now() - startedAt >= 60_000) {
+            clearInterval(interval);
+            return;
+        }
+
+        const theatreButton = document.querySelector<HTMLElement>('.fluid_button_theatre');
+        if (theatreButton) {
+            theatreButton.click();
+            clearInterval(interval);
+        }
+    }, 50);
+});
+
+export function setupVideoSeekControls(videoSeekRules: VideoSeekRule[]) {
+    const matchedRule = videoSeekRules.find(({ urlPattern }) => urlPattern && urlIncludes(urlPattern));
+    if (!matchedRule) {
+        return;
+    }
+    const rule: VideoSeekRule = matchedRule;
+
+    const SEEK_SECONDS = 5;
+    const FINE_SEEK_SECONDS = 3;
+    const LARGE_SEEK_SECONDS = 10;
+    const LOG_PREFIX = `[CommandCenter:video-seek:${rule.urlPattern}]`;
+    console.info(`${LOG_PREFIX} installing ${SEEK_SECONDS}-second keyboard seeking, ${FINE_SEEK_SECONDS} seconds with Shift+A/D, ${LARGE_SEEK_SECONDS} seconds with Ctrl+A/D`);
+
+    function getVideo(): HTMLVideoElement | null {
+        const selector = rule.videoSelector.trim();
+        if (!selector) {
+            return document.querySelector<HTMLVideoElement>('video');
+        }
+
+        try {
+            return document.querySelector<HTMLVideoElement>(selector);
+        } catch (error) {
+            console.warn(`${LOG_PREFIX} invalid video selector "${selector}"`, error);
+            return null;
+        }
+    }
+
+    document.addEventListener('keydown', event => {
+        const key = event.key.toLowerCase();
+        const isLargeSeek = event.ctrlKey && (key === 'a' || key === 'd');
+        if (event.metaKey || event.altKey || (event.ctrlKey && !isLargeSeek)) {
+            return;
+        }
+
+        const seekDirection = key === 'arrowleft' || key === 'a'
+            ? -1
+            : key === 'arrowright' || key === 'd'
+                ? 1
+                : 0;
+        const isSpacebar = event.code === 'Space';
+        const isCloseTab = key === 'x';
+        if (!seekDirection && !isSpacebar && !isCloseTab) {
+            return;
+        }
+
+        const target = event.target;
+        if (target instanceof HTMLElement && target.matches('input, select, textarea, [contenteditable="true"]')) {
+            console.debug(`${LOG_PREFIX} ignoring ${event.key} while editing text`);
+            return;
+        }
+
+        if (isCloseTab) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            console.info(`${LOG_PREFIX} X: closing current tab`);
+            sendMessage(Msg.closeCurrentTab);
+            return;
+        }
+
+        const video = getVideo();
+        if (!video) {
+            console.warn(`${LOG_PREFIX} received ${event.key}, but no player video was found`);
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (isSpacebar) {
+            video.focus();
+            console.info(`${LOG_PREFIX} Space: focused video player`);
+            return;
+        }
+
+        const previousTime = video.currentTime;
+        const seekSeconds = isLargeSeek
+            ? LARGE_SEEK_SECONDS
+            : event.shiftKey && (key === 'a' || key === 'd')
+                ? FINE_SEEK_SECONDS
+                : SEEK_SECONDS;
+        const requestedTime = previousTime + (seekDirection * seekSeconds);
+        const nextTime = Number.isFinite(video.duration)
+            ? Math.min(Math.max(0, requestedTime), video.duration)
+            : Math.max(0, requestedTime);
+
+        video.currentTime = nextTime;
+        console.info(`${LOG_PREFIX} ${event.key}: ${previousTime.toFixed(2)}s -> ${nextTime.toFixed(2)}s (${seekSeconds}s)`);
+    }, true);
+}
 
 siteScript(['sdxdemo.com', 'response.lithium.com', 'app.khoros.com'], 'Care', () => {
     if (urlIncludes('/account/login') && !urlIncludes('manual-c01')) {

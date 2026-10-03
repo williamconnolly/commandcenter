@@ -1,5 +1,5 @@
 import { storage } from '../storage';
-import { setupSiteScripts } from './siteScripts';
+import { setupSiteScripts, setupVideoSeekControls } from './siteScripts';
 import { NEXT_PAGE, PREV_PAGE, triggerPageOffset } from './utils';
 import { setupVimKeys } from './vimKeys';
 
@@ -14,12 +14,13 @@ window.addEventListener('commandcenter:triggerPageOffset:prev', () => {
     triggerPageOffset(PREV_PAGE);
 });
 
-storage.get().then(({ gDoubleTime, vimKeysBlacklistCSV, scrollSmooth }) => {
+storage.get().then(({ gDoubleTime, vimKeysBlacklistCSV, scrollSmooth, videoSeekRules }) => {
     let vimKeysBlacklist: string[] = [];
     try {
         vimKeysBlacklist = vimKeysBlacklistCSV?.split(',') || [];
         vimKeysBlacklist = vimKeysBlacklist.map(bl => bl.trim()).filter(bl => bl?.length > 0);
     } finally {
+        setupVideoSeekControls(videoSeekRules);
         setupVimKeys(gDoubleTime || 350, vimKeysBlacklist || [], scrollSmooth);
     }
 });

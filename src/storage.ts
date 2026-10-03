@@ -1,3 +1,8 @@
+export type VideoSeekRule = {
+    urlPattern: string;
+    videoSelector: string;
+};
+
 export type IStorage = {
     githubUsername: string;
     gDoubleTime: number;
@@ -7,6 +12,7 @@ export type IStorage = {
     redditThumbnailSizeIncrement: number;
     currentRedditThumbnailSize: number;
     awsProfileNamesCSV: string;
+    videoSeekRules: VideoSeekRule[];
 };
 
 const defaultStorage: IStorage = {
@@ -18,6 +24,10 @@ const defaultStorage: IStorage = {
     redditThumbnailSizeIncrement: 5,
     currentRedditThumbnailSize: 100,
     awsProfileNamesCSV: 'sema4ai-backend-dev, sema4ai-backend-prod',
+    videoSeekRules: [{
+        urlPattern: 's.cc',
+        videoSelector: '[data-testid="video-player"] video',
+    }],
 };
 
 export async function resetStorage() {
