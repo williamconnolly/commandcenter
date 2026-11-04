@@ -37,6 +37,7 @@
 </section>
 
 <style>
-    section { margin: 1rem; max-width: 48rem; }
-    textarea { display: block; width: 100%; box-sizing: border-box; margin: .5rem 0; font-family: monospace; }
+    section { margin: 1rem; padding: 1rem; max-width: 48rem; color: #e5e7eb; background: #202124; border-radius: 8px; font: 14px/1.5 system-ui; }
+    textarea { display: block; width: 100%; box-sizing: border-box; margin: .5rem 0; font: 13px/1.5 monospace; padding: 8px; border: 1px solid #64748b; border-radius: 6px; background: #111827; color: #f3f4f6; }
+    button { padding: 6px 12px; border: 1px solid #64748b; border-radius: 6px; background: #374151; color: #fff; }
 </style>
