@@ -1,3 +1,4 @@
+import { setupAwsAccountStorage } from './awsAccounts';
 import {
     type Command,
     CommandType,
@@ -169,3 +170,5 @@ async function loadAllCommands(): Promise<CommandMessageResponse> {
         prCommands
     };
 }
+
+setupAwsAccountStorage();

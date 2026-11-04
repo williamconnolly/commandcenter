@@ -1,3 +1,4 @@
+import { setupAwsAccountLabels } from './awsAccounts';
 import { storage } from '../storage';
 import { setupSiteScripts } from './siteScripts';
 import { NEXT_PAGE, PREV_PAGE, triggerPageOffset } from './utils';
@@ -23,3 +24,5 @@ storage.get().then(({ gDoubleTime, vimKeysBlacklistCSV, scrollSmooth }) => {
         setupVimKeys(gDoubleTime || 350, vimKeysBlacklist || [], scrollSmooth);
     }
 });
+
+setupAwsAccountLabels();
