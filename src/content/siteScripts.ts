@@ -24,6 +24,14 @@ function insertStyle(dedupeId: string, cssText: string) {
     document.head.appendChild(style);
 }
 
+siteScript('k2s.cc', 'Keep2Share player width', () => {
+    insertStyle('commandcenter-k2s-player-width', `
+        #root #app #wrapper div:has(> div > div > [data-testid="video-player"]) {
+            width: 800px !important;
+        }
+    `);
+});
+
 siteScript('jira.dev.lithium.com', 'Jira', () => {
     // make the popup dialogs actually use all the screen real estate
     const style = document.createElement('style');
