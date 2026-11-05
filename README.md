@@ -42,3 +42,28 @@ $ npm run build
 
 <img width="1024" alt="LoadUnpackedExtension" src="https://github.com/williamconnolly/commandcenter/assets/30242826/0cdc81dc-375d-4596-9026-eca11a274de1">
 
+
+## AWS account hover labels
+
+In the extension popup or options, use **AWS account mappings** to paste AWS CLI
+config text with SSO profiles, or a JSON array like:
+
+```json
+[{"id":"123456789012","name":"Example dev","profiles":["example-dev"]}]
+```
+
+Save replaces the mapping; `[]` clears it. Config import extracts only
+`sso_account_id` and profile names, combining profiles that share an account.
+Names initially come from the first profile and can be edited in JSON. Mapping
+data stays in this browser's local storage and does not sync across devices.
+
+On HTTPS pages, pause the pointer over a known 12-digit ID (including within an
+ARN) for 300 ms. Unknown IDs stay untouched. Refresh existing tabs after updating
+the extension. The feature can be disabled in its settings.
+
+Lookup checks only the text under the pointer, with a bounded 25-character slice
+and an in-memory map. There is no page scan, mutation observer, polling, network
+lookup, or rewriting of page text. Dynamically loaded text works automatically.
+Browser text hit-testing and tooltip positioning still perform layout work on
+hover. Editable fields, frames, shadow DOM, canvas, and IDs split across text
+nodes are not supported. IDs have no persistent highlight.
