@@ -42,3 +42,18 @@ $ npm run build
 
 <img width="1024" alt="LoadUnpackedExtension" src="https://github.com/williamconnolly/commandcenter/assets/30242826/0cdc81dc-375d-4596-9026-eca11a274de1">
 
+## Trigger actions from macOS
+
+With CommandCenter loaded on the active Brave webpage, run:
+
+```bash
+./scripts/trigger-action.scpt closeCurrentTab
+./scripts/trigger-action.scpt submit
+# Or: osascript scripts/trigger-action.scpt closeCurrentTab
+```
+
+Enable Brave's **View > Developer > Allow JavaScript from Apple Events**.
+The wrapper dispatches `commandcenter:action:<actionName>` on the active tab.
+Supported actions: `submit`, `closeCurrentTab`, `duplicateTab`, `openExtensions`,
+`openCommandCenter`, `openTabCenter`, `openQuickLinks`, and `close` (close the overlay).
+Reload the extension and webpage after rebuilding to register the action listeners.

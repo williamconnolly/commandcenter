@@ -1,14 +1,12 @@
 import { storage } from '../storage';
-import { submitAction } from './actions';
+import { setupActionEvents } from './actions';
 import { setupSiteScripts, setupVideoSeekControls } from './siteScripts';
 import { NEXT_PAGE, PREV_PAGE, triggerPageOffset } from './utils';
 import { setupVimKeys } from './vimKeys';
 
 setupSiteScripts();
 
-window.addEventListener('commandcenter:action:submit', () => {
-    void submitAction();
-});
+setupActionEvents();
 
 // Expose page offset functionality to external scripts via custom events
 window.addEventListener('commandcenter:triggerPageOffset:next', () => {
