@@ -13,11 +13,13 @@ export type IStorage = {
     currentRedditThumbnailSize: number;
     awsProfileNamesCSV: string;
     videoSeekRules: VideoSeekRule[];
+    submitSelector: string;
 };
 
 const defaultStorage: IStorage = {
     githubUsername: import.meta.env.VITE_GITHUB_USERNAME || '',
     gDoubleTime: 350,
+    submitSelector: 'button[data-testid="fastDownloadBtn"]',
     vimKeysBlacklistCSV: 'google.com, gmail.com',
     scrollSmooth: true,
     newTabBackgroundColor: '#202124', // $kh-black value

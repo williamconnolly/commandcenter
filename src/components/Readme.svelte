@@ -15,6 +15,7 @@
     let redditThumbnailSizeIncrement = $state(5);
     let currentRedditThumbnailSize = $state(70);
     let awsProfileNamesCSV = $state('');
+    let submitSelector = $state('button[data-testid="fastDownloadBtn"]');
     let videoSeekRules = $state<VideoSeekRule[]>([]);
     storage.get().then((storage: IStorage) => {
         githubUsername = storage.githubUsername;
@@ -25,6 +26,7 @@
         redditThumbnailSizeIncrement = storage.redditThumbnailSizeIncrement;
         currentRedditThumbnailSize = storage.currentRedditThumbnailSize;
         awsProfileNamesCSV = storage.awsProfileNamesCSV;
+        submitSelector = storage.submitSelector;
         videoSeekRules = storage.videoSeekRules;
     });
 
@@ -40,6 +42,7 @@
             redditThumbnailSizeIncrement,
             currentRedditThumbnailSize,
             awsProfileNamesCSV,
+            submitSelector,
             videoSeekRules
         });
     }
@@ -225,6 +228,18 @@
                autocomplete="off"
                placeholder="sema4ai-backend-dev, sema4ai-backend-prod"
         >
+    </div>
+    <div class="setting-input">
+        <label for="submitSelector">Submit Action Selector:</label>
+        <input id="submitSelector"
+               name="submitSelector"
+               bind:value={submitSelector}
+               oninput={scheduleSaveSettings}
+               spellcheck="false"
+               autocomplete="off"
+               placeholder='button[data-testid="fastDownloadBtn"]'
+        >
+        <p>Applies to all pages. Leave blank to disable. Clicks only when exactly one element matches.</p>
     </div>
     <div class="setting-input video-seek-settings">
         <label for={ID_VSR}>Video Seek Controls:</label>
